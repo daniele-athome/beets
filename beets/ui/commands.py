@@ -2289,6 +2289,10 @@ def write_items(lib, query, pretend, force):
             )
             continue
 
+        # patch for https://github.com/beetbox/beets/issues/4715
+        if item.albumtype in clean_item.albumtypes:
+            clean_item.albumtype = item.albumtype
+
         # Check for and display changes.
         changed = ui.show_model_changes(
             item, clean_item, library.Item._media_tag_fields, force
