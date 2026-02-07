@@ -85,6 +85,10 @@ class PlaylistQuery(InQuery[bytes]):
             break
         super().__init__("path", paths)
 
+    # workaround for https://github.com/beetbox/beets/issues/5354
+    def __hash__(self) -> int:
+        return hash((self.field_name, hash(str(self.pattern))))
+
 
 class PlaylistPlugin(beets.plugins.BeetsPlugin):
     item_queries: ClassVar[dict[str, FieldQueryType]] = {
