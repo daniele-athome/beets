@@ -25,6 +25,8 @@ New features
   tasks. It re-reads the album's directory from disk and re-runs the match, so
   files can be cleaned up (duplicates, junk) while the import is paused at the
   prompt, without restarting the whole ``beet import`` run.
+- :ref:`list-cmd` Add ``-l / --limit LIMIT`` flag to the ``list`` command to
+  limit query results.
 
 Bug fixes
 ~~~~~~~~~
