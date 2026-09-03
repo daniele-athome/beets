@@ -26,7 +26,7 @@ New features
   files can be cleaned up (duplicates, junk) while the import is paused at the
   prompt, without restarting the whole ``beet import`` run.
 - :ref:`list-cmd` Add ``-l / --limit LIMIT`` flag to the ``list`` command to
-  limit query results.
+  limit query results. :bug:`5076`
 
 Bug fixes
 ~~~~~~~~~
