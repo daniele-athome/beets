@@ -125,6 +125,8 @@ Bug fixes
   Previously all queries were combined, so a listen for "Song" also updated
   "Song (inst.)" or any other item whose title only contained the listened
   title.
+- :doc:`plugins/limit` Deprecate the ``limit`` plugin in favor of the new ``-l``
+  / ``--limit`` flag for the :ref:`list-cmd` command.
 
 ..
     For plugin developers
