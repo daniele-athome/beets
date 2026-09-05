@@ -24,7 +24,14 @@ class Track(TypedDict):
 
 
 def get_items(lib: Library, track: Track, log: BeetsLogger) -> Sequence[Item]:
-    mbid, artist, title = track["mbid"], track["artist"], track["name"]
+    mbid = track["mbid"]
+    if mbid:
+        items = list(lib.items(MatchQuery("mb_trackid", mbid)))
+        if items:
+            # Prefer MBID if there is a match
+            return items
+
+    artist, title = track["artist"], track["name"]
     album = track.get("album") or ""
 
     log.debug("query: {} - {} ({})", artist, title, album)
@@ -39,9 +46,6 @@ def get_items(lib: Library, track: Track, log: BeetsLogger) -> Sequence[Item]:
     or_queries: list[Query] = [
         AndQuery([SubstringQuery("artist", artist), title_query])
     ]
-    # First try to query by musicbrainz's trackid
-    if mbid:
-        or_queries.append(MatchQuery("mb_trackid", mbid))
     if album:
         or_queries.append(
             AndQuery([SubstringQuery("album", album), title_query])
