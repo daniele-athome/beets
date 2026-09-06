@@ -1,25 +1,20 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import pytest
 
 from beets.library import Item
 from beetsplug.deezer import DeezerPlugin
 
-if TYPE_CHECKING:
-    from requests_mock import Mocker
-
 JSONDict = dict[str, Any]
 
 
 @pytest.fixture
-def plugin() -> DeezerPlugin:
+def plugin():
     return DeezerPlugin()
 
 
 class TestSearchQuery:
-    def test_track_query_is_free_text(self, plugin: DeezerPlugin) -> None:
+    def test_track_query_is_free_text(self, plugin):
         query, filters = plugin.get_search_query_with_filters(
             "track", [Item()], "Artist", "Title", False
         )
@@ -27,18 +22,14 @@ class TestSearchQuery:
         assert query == "Title Artist"
         assert filters == {}
 
-    def test_track_query_tolerates_missing_artist(
-        self, plugin: DeezerPlugin
-    ) -> None:
+    def test_track_query_tolerates_missing_artist(self, plugin):
         query, _ = plugin.get_search_query_with_filters(
             "track", [Item()], "", "Title", False
         )
 
         assert query == "Title"
 
-    def test_album_query_filters_on_album_and_artist(
-        self, plugin: DeezerPlugin
-    ) -> None:
+    def test_album_query_filters_on_album_and_artist(self, plugin):
         query, filters = plugin.get_search_query_with_filters(
             "album", [Item()], "Artist", "Album", False
         )
@@ -46,9 +37,7 @@ class TestSearchQuery:
         assert query == 'album:"Album" artist:"Artist"'
         assert filters == {}
 
-    def test_album_query_omits_artist_for_various_artists(
-        self, plugin: DeezerPlugin
-    ) -> None:
+    def test_album_query_omits_artist_for_various_artists(self, plugin):
         query, _ = plugin.get_search_query_with_filters(
             "album", [Item()], "Various Artists", "Album", True
         )
@@ -70,7 +59,7 @@ def make_track(artist_id: int, position: int) -> JSONDict:
 
 
 class TestGetTrack:
-    def track_data(self, **fields) -> JSONDict:
+    def track_data(self, **fields):
         return {
             "id": 1,
             "title": "Title",
@@ -79,9 +68,7 @@ class TestGetTrack:
             **fields,
         }
 
-    def test_uses_contributors_when_artist_is_missing(
-        self, plugin: DeezerPlugin
-    ) -> None:
+    def test_uses_contributors_when_artist_is_missing(self, plugin):
         track = plugin._get_track(
             self.track_data(contributors=[{"id": 2, "name": "Artist"}])
         )
@@ -89,9 +76,7 @@ class TestGetTrack:
         assert track.artist == "Artist"
         assert track.artist_id == "2"
 
-    def test_falls_back_to_artist_without_contributors(
-        self, plugin: DeezerPlugin
-    ) -> None:
+    def test_falls_back_to_artist_without_contributors(self, plugin):
         track = plugin._get_track(
             self.track_data(artist={"id": 2, "name": "Artist"})
         )
@@ -99,9 +84,7 @@ class TestGetTrack:
         assert track.artist == "Artist"
         assert track.artist_id == "2"
 
-    def test_tolerates_missing_artist_and_contributors(
-        self, plugin: DeezerPlugin
-    ) -> None:
+    def test_tolerates_missing_artist_and_contributors(self, plugin):
         track = plugin._get_track(self.track_data())
 
         assert track.artist is None
@@ -131,11 +114,11 @@ class TestVariousArtistsDetection:
 
     def mock_album(
         self,
-        requests_mock: Mocker,
-        album_artist_id: int,
-        track_artist_ids: list[int],
-        contributor_ids: list[int] | None = None,
-    ) -> None:
+        requests_mock,
+        album_artist_id,
+        track_artist_ids,
+        contributor_ids=None,
+    ):
         """Mock the album and album-tracks endpoints for album id 1.
 
         ``contributor_ids`` overrides the album-level contributors, which
@@ -159,9 +142,7 @@ class TestVariousArtistsDetection:
             },
         )
 
-    def test_compilation_with_non_va_album_artist(
-        self, plugin: DeezerPlugin, requests_mock: Mocker
-    ) -> None:
+    def test_compilation_with_non_va_album_artist(self, plugin, requests_mock):
         # Album credited to a single "main" artist that performs on only one
         # of many tracks: this is a compilation and should be flagged as VA.
         self.mock_album(
@@ -176,9 +157,7 @@ class TestVariousArtistsDetection:
         assert album_info.va is True
         assert album_info.artist == "Various Artists"
 
-    def test_plurality_artist_album_not_va(
-        self, plugin: DeezerPlugin, requests_mock: Mocker
-    ) -> None:
+    def test_plurality_artist_album_not_va(self, plugin, requests_mock):
         # Album whose main artist performs on 2 of 5 tracks (40%) is above
         # the importer's single-artist threshold and stays single-artist.
         self.mock_album(
@@ -194,9 +173,7 @@ class TestVariousArtistsDetection:
         assert album_info.va is False
         assert album_info.artist == "Artist 100"
 
-    def test_single_artist_album_not_va(
-        self, plugin: DeezerPlugin, requests_mock: Mocker
-    ) -> None:
+    def test_single_artist_album_not_va(self, plugin, requests_mock):
         # Album whose main artist performs on every track is not a compilation.
         self.mock_album(
             requests_mock,
