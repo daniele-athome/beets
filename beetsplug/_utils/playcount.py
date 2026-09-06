@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, TypedDict
 from typing_extensions import NotRequired
 
 from beets.dbcore import AndQuery, MatchQuery, OrQuery
-from beets.dbcore.query import SubstringQuery
+from beets.dbcore.query import StringQuery, SubstringQuery
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -36,6 +36,24 @@ def get_items(lib: Library, track: Track, log: BeetsLogger) -> Sequence[Item]:
 
     log.debug("query: {} - {} ({})", artist, title, album)
 
+    # Try exact match first
+    title_query = OrQuery(
+        [
+            StringQuery("title", title),
+            # try a right single quotation mark instead of an apostrophe
+            StringQuery("title", title.replace("'", "\u2019")),
+        ]
+    )
+
+    or_queries: list[Query] = [StringQuery("artist", artist)]
+    if album:
+        or_queries.append(StringQuery("album", album))
+
+    items = list(lib.items(AndQuery([title_query, OrQuery(or_queries)])))
+    if items:
+        return items
+
+    # Fall back to substring matches
     title_query = OrQuery(
         [
             SubstringQuery("title", title),
@@ -43,7 +61,7 @@ def get_items(lib: Library, track: Track, log: BeetsLogger) -> Sequence[Item]:
             SubstringQuery("title", title.replace("'", "\u2019")),
         ]
     )
-    or_queries: list[Query] = [SubstringQuery("artist", artist)]
+    or_queries = [SubstringQuery("artist", artist)]
     if album:
         or_queries.append(SubstringQuery("album", album))
 
