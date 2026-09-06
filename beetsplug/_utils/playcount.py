@@ -43,15 +43,11 @@ def get_items(lib: Library, track: Track, log: BeetsLogger) -> Sequence[Item]:
             SubstringQuery("title", title.replace("'", "\u2019")),
         ]
     )
-    or_queries: list[Query] = [
-        AndQuery([SubstringQuery("artist", artist), title_query])
-    ]
+    or_queries: list[Query] = [SubstringQuery("artist", artist)]
     if album:
-        or_queries.append(
-            AndQuery([SubstringQuery("album", album), title_query])
-        )
+        or_queries.append(SubstringQuery("album", album))
 
-    return list(lib.items(OrQuery(or_queries)))
+    return list(lib.items(AndQuery([title_query, OrQuery(or_queries)])))
 
 
 def process_track(
