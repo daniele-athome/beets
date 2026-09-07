@@ -116,6 +116,13 @@ Bug fixes
   ``tarfile.TarFile`` lost its ``ZipFileCompat`` interface in Python 3 and
   ``py7zr.SevenZipFile`` exposes ``list()`` rather than ``infolist()``.
   :bug:`5664`
+- :doc:`plugins/listenbrainz` and :doc:`plugins/lastimport`: Play counts are now
+  matched more accurately. An exact MusicBrainz recording ID match is preferred
+  when one exists, and titles are matched exactly (confirmed by the artist or
+  album) before falling back to the previous substring-based matching.
+  Previously all queries were combined, so a listen for "Song" also updated
+  "Song (inst.)" or any other item whose title only contained the listened
+  title.
 
 ..
     For plugin developers
