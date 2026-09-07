@@ -133,6 +133,9 @@ Other changes
 
 - :doc:`plugins/bpd`: Replace the bundled Bluelet scheduler with Python's
   standard ``asyncio`` event loop.
+- Docs: fix broken link to ``test/dbcore/test_query.py`` in
+  ``CONTRIBUTING.rst``; add crawler-blocking and unreachable sites to
+  ``linkcheck_ignore`` in ``docs/conf.py``.
 
 2.13.1 (July 29, 2026)
 ----------------------
