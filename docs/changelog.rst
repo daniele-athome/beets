@@ -25,6 +25,8 @@ New features
   tasks. It re-reads the album's directory from disk and re-runs the match, so
   files can be cleaned up (duplicates, junk) while the import is paused at the
   prompt, without restarting the whole ``beet import`` run.
+- :ref:`list-cmd` Add ``-l / --limit LIMIT`` flag to the ``list`` command to
+  limit query results. :bug:`5076`
 
 Bug fixes
 ~~~~~~~~~
@@ -123,6 +125,8 @@ Bug fixes
   Previously all queries were combined, so a listen for "Song" also updated
   "Song (inst.)" or any other item whose title only contained the listened
   title.
+- :doc:`plugins/limit` Deprecate the ``limit`` plugin in favor of the new ``-l``
+  / ``--limit`` flag for the :ref:`list-cmd` command.
 
 ..
     For plugin developers
